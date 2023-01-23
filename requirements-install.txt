@@ -1,0 +1,188 @@
+❯ pip3 install -r requirements.txt
+Collecting gitpython
+  Downloading GitPython-3.1.30-py3-none-any.whl (184 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 184.0/184.0 kB 11.0 MB/s eta 0:00:00
+Collecting ipython
+  Downloading ipython-8.8.0-py3-none-any.whl (775 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 775.8/775.8 kB 29.9 MB/s eta 0:00:00
+Collecting matplotlib>=3.2.2
+  Downloading matplotlib-3.6.3-cp310-cp310-macosx_11_0_arm64.whl (7.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.2/7.2 MB 65.8 MB/s eta 0:00:00
+Collecting numpy>=1.18.5
+  Downloading numpy-1.24.1-cp310-cp310-macosx_11_0_arm64.whl (13.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 13.9/13.9 MB 45.0 MB/s eta 0:00:00
+Collecting opencv-python>=4.1.1
+  Downloading opencv_python-4.7.0.68-cp37-abi3-macosx_11_0_arm64.whl (31.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 31.1/31.1 MB 35.9 MB/s eta 0:00:00
+Collecting Pillow>=7.1.2
+  Downloading Pillow-9.4.0-cp310-cp310-macosx_11_0_arm64.whl (3.0 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.0/3.0 MB 39.2 MB/s eta 0:00:00
+Collecting psutil
+  Downloading psutil-5.9.4-cp38-abi3-macosx_11_0_arm64.whl (244 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 244.2/244.2 kB 21.9 MB/s eta 0:00:00
+Collecting PyYAML>=5.3.1
+  Downloading PyYAML-6.0-cp310-cp310-macosx_11_0_arm64.whl (173 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 174.0/174.0 kB 8.1 MB/s eta 0:00:00
+Collecting requests>=2.23.0
+  Downloading requests-2.28.2-py3-none-any.whl (62 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.8/62.8 kB 7.2 MB/s eta 0:00:00
+Collecting scipy>=1.4.1
+  Downloading scipy-1.10.0-cp310-cp310-macosx_12_0_arm64.whl (28.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 28.8/28.8 MB 49.5 MB/s eta 0:00:00
+Collecting thop>=0.1.1
+  Downloading thop-0.1.1.post2209072238-py3-none-any.whl (15 kB)
+Collecting torch>=1.7.0
+  Downloading torch-1.13.1-cp310-none-macosx_11_0_arm64.whl (53.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 53.2/53.2 MB 30.4 MB/s eta 0:00:00
+Collecting torchvision>=0.8.1
+  Downloading torchvision-0.14.1-cp310-cp310-macosx_11_0_arm64.whl (1.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 30.7 MB/s eta 0:00:00
+Collecting tqdm>=4.64.0
+  Downloading tqdm-4.64.1-py2.py3-none-any.whl (78 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 78.5/78.5 kB 13.2 MB/s eta 0:00:00
+Collecting tensorboard>=2.4.1
+  Downloading tensorboard-2.11.2-py3-none-any.whl (6.0 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.0/6.0 MB 38.5 MB/s eta 0:00:00
+Collecting pandas>=1.1.4
+  Downloading pandas-1.5.3-cp310-cp310-macosx_11_0_arm64.whl (10.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.9/10.9 MB 33.0 MB/s eta 0:00:00
+Collecting seaborn>=0.11.0
+  Downloading seaborn-0.12.2-py3-none-any.whl (293 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 293.3/293.3 kB 18.1 MB/s eta 0:00:00
+Collecting gitdb<5,>=4.0.1
+  Downloading gitdb-4.0.10-py3-none-any.whl (62 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.7/62.7 kB 10.5 MB/s eta 0:00:00
+Collecting stack-data
+  Downloading stack_data-0.6.2-py3-none-any.whl (24 kB)
+Collecting traitlets>=5
+  Downloading traitlets-5.8.1-py3-none-any.whl (116 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 116.8/116.8 kB 10.9 MB/s eta 0:00:00
+Collecting pickleshare
+  Downloading pickleshare-0.7.5-py2.py3-none-any.whl (6.9 kB)
+Collecting prompt-toolkit<3.1.0,>=3.0.11
+  Downloading prompt_toolkit-3.0.36-py3-none-any.whl (386 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 386.4/386.4 kB 20.0 MB/s eta 0:00:00
+Collecting backcall
+  Downloading backcall-0.2.0-py2.py3-none-any.whl (11 kB)
+Collecting decorator
+  Downloading decorator-5.1.1-py3-none-any.whl (9.1 kB)
+Collecting pexpect>4.3
+  Downloading pexpect-4.8.0-py2.py3-none-any.whl (59 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 59.0/59.0 kB 7.3 MB/s eta 0:00:00
+Collecting pygments>=2.4.0
+  Downloading Pygments-2.14.0-py3-none-any.whl (1.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.1/1.1 MB 24.2 MB/s eta 0:00:00
+Collecting jedi>=0.16
+  Downloading jedi-0.18.2-py2.py3-none-any.whl (1.6 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.6/1.6 MB 26.3 MB/s eta 0:00:00
+Collecting appnope
+  Downloading appnope-0.1.3-py2.py3-none-any.whl (4.4 kB)
+Collecting matplotlib-inline
+  Downloading matplotlib_inline-0.1.6-py3-none-any.whl (9.4 kB)
+Collecting pyparsing>=2.2.1
+  Downloading pyparsing-3.0.9-py3-none-any.whl (98 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 98.3/98.3 kB 13.7 MB/s eta 0:00:00
+Collecting fonttools>=4.22.0
+  Downloading fonttools-4.38.0-py3-none-any.whl (965 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 965.4/965.4 kB 27.4 MB/s eta 0:00:00
+Collecting cycler>=0.10
+  Downloading cycler-0.11.0-py3-none-any.whl (6.4 kB)
+Collecting python-dateutil>=2.7
+  Downloading python_dateutil-2.8.2-py2.py3-none-any.whl (247 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 247.7/247.7 kB 16.2 MB/s eta 0:00:00
+Collecting packaging>=20.0
+  Downloading packaging-23.0-py3-none-any.whl (42 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 42.7/42.7 kB 4.2 MB/s eta 0:00:00
+Collecting contourpy>=1.0.1
+  Downloading contourpy-1.0.7-cp310-cp310-macosx_11_0_arm64.whl (229 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 229.7/229.7 kB 20.6 MB/s eta 0:00:00
+Collecting kiwisolver>=1.0.1
+  Downloading kiwisolver-1.4.4-cp310-cp310-macosx_11_0_arm64.whl (63 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 63.2/63.2 kB 6.2 MB/s eta 0:00:00
+Collecting certifi>=2017.4.17
+  Downloading certifi-2022.12.7-py3-none-any.whl (155 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 155.3/155.3 kB 17.0 MB/s eta 0:00:00
+Collecting charset-normalizer<4,>=2
+  Downloading charset_normalizer-3.0.1-cp310-cp310-macosx_11_0_arm64.whl (122 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 122.5/122.5 kB 13.2 MB/s eta 0:00:00
+Collecting idna<4,>=2.5
+  Downloading idna-3.4-py3-none-any.whl (61 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 61.5/61.5 kB 4.8 MB/s eta 0:00:00
+Collecting urllib3<1.27,>=1.21.1
+  Downloading urllib3-1.26.14-py2.py3-none-any.whl (140 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 140.6/140.6 kB 11.2 MB/s eta 0:00:00
+Collecting typing-extensions
+  Downloading typing_extensions-4.4.0-py3-none-any.whl (26 kB)
+Collecting wheel>=0.26
+  Downloading wheel-0.38.4-py3-none-any.whl (36 kB)
+Collecting grpcio>=1.24.3
+  Downloading grpcio-1.51.1.tar.gz (22.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 22.1/22.1 MB 39.1 MB/s eta 0:00:00
+  Preparing metadata (setup.py) ... done
+Collecting tensorboard-plugin-wit>=1.6.0
+  Downloading tensorboard_plugin_wit-1.8.1-py3-none-any.whl (781 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 781.3/781.3 kB 32.1 MB/s eta 0:00:00
+Requirement already satisfied: setuptools>=41.0.0 in ./.venv1/lib/python3.10/site-packages (from tensorboard>=2.4.1->-r requirements.txt (line 22)) (65.4.1)
+Collecting absl-py>=0.4
+  Downloading absl_py-1.4.0-py3-none-any.whl (126 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 126.5/126.5 kB 13.8 MB/s eta 0:00:00
+Collecting google-auth<3,>=1.6.3
+  Downloading google_auth-2.16.0-py2.py3-none-any.whl (177 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 177.8/177.8 kB 17.3 MB/s eta 0:00:00
+Collecting google-auth-oauthlib<0.5,>=0.4.1
+  Downloading google_auth_oauthlib-0.4.6-py2.py3-none-any.whl (18 kB)
+Collecting markdown>=2.6.8
+  Downloading Markdown-3.4.1-py3-none-any.whl (93 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 93.3/93.3 kB 11.1 MB/s eta 0:00:00
+Collecting tensorboard-data-server<0.7.0,>=0.6.0
+  Downloading tensorboard_data_server-0.6.1-py3-none-any.whl (2.4 kB)
+Collecting werkzeug>=1.0.1
+  Downloading Werkzeug-2.2.2-py3-none-any.whl (232 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 232.7/232.7 kB 17.2 MB/s eta 0:00:00
+Collecting protobuf<4,>=3.9.2
+  Downloading protobuf-3.20.3-py2.py3-none-any.whl (162 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 162.1/162.1 kB 19.3 MB/s eta 0:00:00
+Collecting pytz>=2020.1
+  Downloading pytz-2022.7.1-py2.py3-none-any.whl (499 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 499.4/499.4 kB 21.0 MB/s eta 0:00:00
+Collecting smmap<6,>=3.0.1
+  Downloading smmap-5.0.0-py3-none-any.whl (24 kB)
+Collecting rsa<5,>=3.1.4
+  Downloading rsa-4.9-py3-none-any.whl (34 kB)
+Collecting six>=1.9.0
+  Downloading six-1.16.0-py2.py3-none-any.whl (11 kB)
+Collecting cachetools<6.0,>=2.0.0
+  Downloading cachetools-5.2.1-py3-none-any.whl (9.3 kB)
+Collecting pyasn1-modules>=0.2.1
+  Downloading pyasn1_modules-0.2.8-py2.py3-none-any.whl (155 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 155.3/155.3 kB 19.7 MB/s eta 0:00:00
+Collecting requests-oauthlib>=0.7.0
+  Downloading requests_oauthlib-1.3.1-py2.py3-none-any.whl (23 kB)
+Collecting parso<0.9.0,>=0.8.0
+  Downloading parso-0.8.3-py2.py3-none-any.whl (100 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100.8/100.8 kB 12.1 MB/s eta 0:00:00
+Collecting ptyprocess>=0.5
+  Downloading ptyprocess-0.7.0-py2.py3-none-any.whl (13 kB)
+Collecting wcwidth
+  Downloading wcwidth-0.2.6-py2.py3-none-any.whl (29 kB)
+Collecting MarkupSafe>=2.1.1
+  Downloading MarkupSafe-2.1.2-cp310-cp310-macosx_10_9_universal2.whl (17 kB)
+Collecting pure-eval
+  Downloading pure_eval-0.2.2-py3-none-any.whl (11 kB)
+Collecting executing>=1.2.0
+  Downloading executing-1.2.0-py2.py3-none-any.whl (24 kB)
+Collecting asttokens>=2.1.0
+  Downloading asttokens-2.2.1-py2.py3-none-any.whl (26 kB)
+Collecting pyasn1<0.5.0,>=0.4.6
+  Downloading pyasn1-0.4.8-py2.py3-none-any.whl (77 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 77.1/77.1 kB 12.1 MB/s eta 0:00:00
+Collecting oauthlib>=3.0.0
+  Downloading oauthlib-3.2.2-py3-none-any.whl (151 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 151.7/151.7 kB 13.6 MB/s eta 0:00:00
+Using legacy 'setup.py install' for grpcio, since package 'wheel' is not installed.
+Installing collected packages: wcwidth, tensorboard-plugin-wit, pytz, pyasn1, pure-eval, ptyprocess, pickleshare, executing, charset-normalizer, backcall, appnope, wheel, urllib3, typing-extensions, traitlets, tqdm, tensorboard-data-server, smmap, six, rsa, PyYAML, pyparsing, pygments, pyasn1-modules, psutil, protobuf, prompt-toolkit, Pillow, pexpect, parso, packaging, oauthlib, numpy, MarkupSafe, markdown, kiwisolver, idna, grpcio, fonttools, decorator, cycler, certifi, cachetools, absl-py, werkzeug, torch, scipy, requests, python-dateutil, opencv-python, matplotlib-inline, jedi, google-auth, gitdb, contourpy, asttokens, torchvision, thop, stack-data, requests-oauthlib, pandas, matplotlib, gitpython, seaborn, ipython, google-auth-oauthlib, tensorboard
+  Running setup.py install for grpcio ... done
+Successfully installed MarkupSafe-2.1.2 Pillow-9.4.0 PyYAML-6.0 absl-py-1.4.0 appnope-0.1.3 asttokens-2.2.1 backcall-0.2.0 cachetools-5.2.1 certifi-2022.12.7 charset-normalizer-3.0.1 contourpy-1.0.7 cycler-0.11.0 decorator-5.1.1 executing-1.2.0 fonttools-4.38.0 gitdb-4.0.10 gitpython-3.1.30 google-auth-2.16.0 google-auth-oauthlib-0.4.6 grpcio-1.51.1 idna-3.4 ipython-8.8.0 jedi-0.18.2 kiwisolver-1.4.4 markdown-3.4.1 matplotlib-3.6.3 matplotlib-inline-0.1.6 numpy-1.24.1 oauthlib-3.2.2 opencv-python-4.7.0.68 packaging-23.0 pandas-1.5.3 parso-0.8.3 pexpect-4.8.0 pickleshare-0.7.5 prompt-toolkit-3.0.36 protobuf-3.20.3 psutil-5.9.4 ptyprocess-0.7.0 pure-eval-0.2.2 pyasn1-0.4.8 pyasn1-modules-0.2.8 pygments-2.14.0 pyparsing-3.0.9 python-dateutil-2.8.2 pytz-2022.7.1 requests-2.28.2 requests-oauthlib-1.3.1 rsa-4.9 scipy-1.10.0 seaborn-0.12.2 six-1.16.0 smmap-5.0.0 stack-data-0.6.2 tensorboard-2.11.2 tensorboard-data-server-0.6.1 tensorboard-plugin-wit-1.8.1 thop-0.1.1.post2209072238 torch-1.13.1 torchvision-0.14.1 tqdm-4.64.1 traitlets-5.8.1 typing-extensions-4.4.0 urllib3-1.26.14 wcwidth-0.2.6 werkzeug-2.2.2 wheel-0.38.4
+
+[notice] A new release of pip available: 22.2.2 -> 22.3.1
+[notice] To update, run: pip install --upgrade pip

@@ -1,0 +1,16 @@
+❯ source .venv1/bin/activate
+❯ which python
+/Users/lt/mygh/yolov5/.venv1/bin/python
+❯ pip list
+Package    Version
+---------- -------
+pip        22.2.2
+setuptools 65.4.1
+
+[notice] A new release of pip available: 22.2.2 -> 22.3.1
+[notice] To update, run: pip install --upgrade pip
+❯ 
+❯ which python3
+/Users/lt/mygh/yolov5/.venv1/bin/python3
+❯ which pip3
+/Users/lt/mygh/yolov5/.venv1/bin/pip3

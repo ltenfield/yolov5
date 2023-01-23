@@ -16,6 +16,7 @@ from itertools import repeat
 from multiprocessing.pool import Pool, ThreadPool
 from pathlib import Path
 from threading import Thread
+from threading import Event
 from urllib.parse import urlparse
 
 import numpy as np
@@ -338,12 +339,14 @@ class LoadImages:
 
 class LoadStreams:
     # YOLOv5 streamloader, i.e. `python detect.py --source 'rtsp://example.com/media.mp4'  # RTSP, RTMP, HTTP streams`
-    def __init__(self, sources='streams.txt', img_size=640, stride=32, auto=True, transforms=None, vid_stride=1):
+    def __init__(self, sources='streams.txt', img_size=640, stride=32, auto=True, transforms=None, vid_stride=1, mse_max=50):
         torch.backends.cudnn.benchmark = True  # faster for fixed-size inference
+        self.event = Event() # Thread sync between update and __next__
         self.mode = 'stream'
         self.img_size = img_size
         self.stride = stride
         self.vid_stride = vid_stride  # video frame-rate stride
+        self.mse_max = mse_max
         sources = Path(sources).read_text().rsplit() if os.path.isfile(sources) else [sources]
         n = len(sources)
         self.sources = [clean_str(x) for x in sources]  # clean source names for later
@@ -367,7 +370,7 @@ class LoadStreams:
             fps = cap.get(cv2.CAP_PROP_FPS)  # warning: may return 0 or nan
             self.frames[i] = max(int(cap.get(cv2.CAP_PROP_FRAME_COUNT)), 0) or float('inf')  # infinite stream fallback
             self.fps[i] = max((fps if math.isfinite(fps) else 0) % 100, 0) or 30  # 30 FPS fallback
-
+            #self.fps[i] = 1
             _, self.imgs[i] = cap.read()  # guarantee first frame
             self.threads[i] = Thread(target=self.update, args=([i, cap, s]), daemon=True)
             LOGGER.info(f"{st} Success ({self.frames[i]} frames {w}x{h} at {self.fps[i]:.2f} FPS)")
@@ -385,18 +388,52 @@ class LoadStreams:
     def update(self, i, cap, stream):
         # Read stream `i` frames in daemon thread
         n, f = 0, self.frames[i]  # frame number, frame array
+        first = True
+        mse = 0
+        LOGGER.info(f'update start n:{n} frame:{f} mse_max:{self.mse_max}')
         while cap.isOpened() and n < f:
-            n += 1
             cap.grab()  # .read() = .grab() followed by .retrieve()
+            n += 1
             if n % self.vid_stride == 0:
                 success, im = cap.retrieve()
                 if success:
-                    self.imgs[i] = im
+                    mse = self.mse(self.imgs[i],im)
+                    if first or mse > self.mse_max: # if image differences large enough
+                        self.imgs[i] = im # send to detect
+                        # LOGGER.info(f'n:{n} frame:{f}')
+                        self.event.set() #notify consumer
+                        first = False
+                        # LOGGER.info(f'mse_max:{self.mse_max} mse:{mse}')
                 else:
                     LOGGER.warning('WARNING ⚠️ Video stream unresponsive, please check your IP camera connection.')
                     self.imgs[i] = np.zeros_like(self.imgs[i])
                     cap.open(stream)  # re-open stream if signal was lost
             time.sleep(0.0)  # wait time
+
+    def diff_img(self, img0, img):
+        '''
+        This function is designed for calculating the difference between two
+        images. The images are convert it to an grey image and be resized to reduce the unnecessary calculating.
+        '''
+        # Grey and resize
+        img0 =  cv2.cvtColor(img0, cv2.COLOR_RGB2GRAY)
+        img =  cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        #img0 = cv2.resize(img0, (320,200), interpolation = cv2.INTER_AREA)
+        #img = cv2.resize(img, (320,200), interpolation = cv2.INTER_AREA)
+        # Calculate
+        Result = (abs(img - img0)).sum()
+        return Result
+
+    def mse(self, imageA, imageB):
+        # taken from https://pyimagesearch.com/2014/09/15/python-compare-two-images/
+        # the 'Mean Squared Error' between the two images is the
+        # sum of the squared difference between the two images;
+        # NOTE: the two images must have the same dimension
+        err = np.sum((imageA.astype("float") - imageB.astype("float")) ** 2)
+        err /= float(imageA.shape[0] * imageA.shape[1]) 
+        # return the MSE, the lower the error, the more "similar"
+        # the two images are
+        return err
 
     def __iter__(self):
         self.count = -1
@@ -404,6 +441,9 @@ class LoadStreams:
 
     def __next__(self):
         self.count += 1
+        self.event.wait(timeout=None) # wait for new image from update
+        self.event.clear() # reset notification
+        # LOGGER.info(f'LoadStreams count:{self.count}')
         if not all(x.is_alive() for x in self.threads) or cv2.waitKey(1) == ord('q'):  # q to quit
             cv2.destroyAllWindows()
             raise StopIteration
