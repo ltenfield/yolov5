@@ -18,6 +18,7 @@ from pathlib import Path
 from threading import Thread
 from threading import Event
 from urllib.parse import urlparse
+from datetime import datetime
 
 import numpy as np
 import psutil
@@ -386,29 +387,36 @@ class LoadStreams:
             LOGGER.warning('WARNING ⚠️ Stream shapes differ. For optimal performance supply similarly-shaped streams.')
 
     def update(self, i, cap, stream):
-        # Read stream `i` frames in daemon thread
-        n, f = 0, self.frames[i]  # frame number, frame array
-        first = True
-        mse = 0
-        LOGGER.info(f'update start n:{n} frame:{f} mse_max:{self.mse_max}')
-        while cap.isOpened() and n < f:
-            cap.grab()  # .read() = .grab() followed by .retrieve()
-            n += 1
-            if n % self.vid_stride == 0:
-                success, im = cap.retrieve()
-                if success:
-                    mse = self.mse(self.imgs[i],im)
-                    if first or mse > self.mse_max: # if image differences large enough
-                        self.imgs[i] = im # send to detect
-                        # LOGGER.info(f'n:{n} frame:{f}')
-                        self.event.set() #notify consumer
-                        first = False
-                        # LOGGER.info(f'mse_max:{self.mse_max} mse:{mse}')
-                else:
-                    LOGGER.warning('WARNING ⚠️ Video stream unresponsive, please check your IP camera connection.')
-                    self.imgs[i] = np.zeros_like(self.imgs[i])
-                    cap.open(stream)  # re-open stream if signal was lost
-            time.sleep(0.0)  # wait time
+        while True:
+            if not cap.isOpened():
+                cap = cv2.VideoCapture(stream)
+            # Read stream `i` frames in daemon thread
+            n, f = 0, self.frames[i]  # frame number, frame array
+            first = True
+            mse = 0
+            now = datetime.now()
+            dt_string = now.strftime("%d/%m/%Y %H:%M:%S") 
+            LOGGER.info(f'[{dt_string}] update start n:{n} frame:{f} mse_max:{self.mse_max}')
+            while cap.isOpened() and n < f:
+                cap.grab()  # .read() = .grab() followed by .retrieve()
+                n += 1
+                if n % self.vid_stride == 0:
+                    success, im = cap.retrieve()
+                    if success:
+                        mse = self.mse(self.imgs[i],im)
+                        if first or mse > self.mse_max: # if image differences large enough
+                            self.imgs[i] = im # send to detect
+                            # LOGGER.info(f'n:{n} frame:{f}')
+                            self.event.set() #notify consumer
+                            first = False
+                            # LOGGER.info(f'mse_max:{self.mse_max} mse:{mse}')
+                    else:
+                        LOGGER.warning('WARNING ⚠️ Video stream unresponsive, please check your IP camera connection.')
+                        #self.imgs[i] = np.zeros_like(self.imgs[i])
+                        #cap.open(stream)  # re-open stream if signal was lost
+                        cap.release()
+                        time.sleep(10) # wait ten seconds before trying again
+                time.sleep(0.0)  # wait time
 
     def diff_img(self, img0, img):
         '''
