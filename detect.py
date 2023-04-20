@@ -33,6 +33,7 @@ import sys
 from pathlib import Path
 from datetime import datetime, timedelta
 import subprocess
+#import logging
 #from playsound import playsound
 
 import torch
@@ -80,8 +81,13 @@ def run(
         half=False,  # use FP16 half-precision inference
         dnn=False,  # use OpenCV DNN for ONNX inference
         vid_stride=1,  # video frame-rate stride
-        mse_max=50 # mse image difference
+        mse_max=50, # mse image difference
+        verbose=False # debug output
 ):
+    if verbose:
+        LOGGER.setLevel(logging.DEBUG)
+    else:
+        LOGGER.setLevel(logging.INFO)
     source = str(source)
     save_img = not nosave and not source.endswith('.txt')  # save inference images
     is_file = Path(source).suffix[1:] in (IMG_FORMATS + VID_FORMATS)
@@ -114,7 +120,7 @@ def run(
     vid_path, vid_writer = [None] * bs, [None] * bs
 
     # Run inference
-    lastcapstart: datetime = datetime.now() - timedelta(minutes = 2) #TODO: fix so vid cap start immediatly
+    lastdettime: datetime = datetime.now()
     vsaveproc: subprocess.Popen[bytes] = None
     model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))  # warmup
     seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
@@ -208,47 +214,33 @@ def run(
                     # use source for rtsp or file input stream
                     save_path = save_path + dt_string
                     save_result = cv2.imwrite(save_path + ".png", im0)
-                    LOGGER.info(f'saved image to:[{save_path}] result:[{save_result}]\n')
-                    sincelastcap = now - lastcapstart
-                    LOGGER.info(f'duration since last cap:[{sincelastcap}] vsaveproc:[{vsaveproc}]\n')
-                    if (sincelastcap) > timedelta(seconds = 30):
-                        LOGGER.info(f'new cap,time since video cap:{now - lastcapstart}\n')
-                        if vsaveproc and sincelastcap > timedelta(seconds = 60):
-                            result = vsaveproc.stdin.write("q") 
-                            vsaveproc.stdin.flush()
-                            LOGGER.info(f'tried to kill previous video caputure result:[{result}]')
-                            #vsaveproc.terminate()
-                            #LOGGER.info(f'after non activity, tried to terminate() previous video caputure')
-                            vsaveproc = None
+                    LOGGER.info(f'saved image to:[{save_path}] result:[{save_result}]')
+                    lastdettime = datetime.now() # update last time since detection
+                    if vsaveproc:
+                        pollresult = vsaveproc.poll()
+                    else: 
+                        pollresult = False
+                    if pollresult == None: # if ffmpeg stream is running, let it continue
+                        LOGGER.debug(f'ffmpeg running, continuing ffmpeg caputure')
+                    else: #nothing capturing stream so fork ffmpeg
+                        LOGGER.debug(f'ffmpeg completed, got exit code:[{pollresult}]')
                         save_path = str(Path(save_path).with_suffix('.avi'))  # force *.mp4
-                        vsaveproc = subprocess.Popen(["/usr/bin/ffmpeg","-t","300s","-i",source,"-c","copy",save_path],stdin=subprocess.PIPE,text=True,universal_newlines=True)
-                        lastcapstart = datetime.now() # make sure no new captures start while this one is running
+                        vsaveproc = subprocess.Popen(["/usr/bin/ffmpeg","-t","300s","-loglevel","warning",
+                            "-i",source,"-c","copy",save_path],stdin=subprocess.PIPE,text=True,universal_newlines=True)
                         LOGGER.info(f'launched video copy to:{save_path} vsaveproc:[{vsaveproc}]')
+                    
             else:
                 now = datetime.now()
-                sincelastcap = now - lastcapstart
-                LOGGER.info(f'duration since last cap:[{sincelastcap}] vsaveproc:[{vsaveproc}]\n')
-                if (now - lastcapstart) > timedelta(seconds = 30):
-                    LOGGER.info(f'need to kill time since video cap:{now - lastcapstart}\n')
-                    if vsaveproc: # if a video capture process is running
-                        result = vsaveproc.stdin.write("q") 
-                        vsaveproc.stdin.flush()
-                        LOGGER.info(f'after non activity, tried to kill previous video caputure result:[{result}]\n')
-                        #vsaveproc.terminate()
-                        #LOGGER.info(f'after non activity, tried to terminate() previous video caputure')
+                sincelastdet = now - lastdettime
+                #LOGGER.debug(f'duration since last cap:[{sincelastdet}] vsaveproc:[{vsaveproc}]')
+                if sincelastdet > timedelta(seconds = 60):
+                    #LOGGER.debug(f'need to kill time since video cap:{sincelastdet}')
+                    if vsaveproc and vsaveproc.poll() == None: # if a video capture process is running
+                        #result = vsaveproc.stdin.write("q") # also works to stop ffmpeg capture
+                        #vsaveproc.stdin.flush()
+                        vsaveproc.terminate() # also works to stop ffmpeg capture
+                        LOGGER.debug(f'after non activity, kill ffmpeg capture, time since video cap:{sincelastdet}')
                         vsaveproc = None
-                    #     if isinstance(vid_writer[i], cv2.VideoWriter):
-                    #         vid_writer[i].release()  # release previous video writer
-                    #     if vid_cap:  # video
-                    #         fps = vid_cap.get(cv2.CAP_PROP_FPS)
-                    #         w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-                    #         h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                    #     else:  # stream
-                    #         fps, w, h = 30, im0.shape[1], im0.shape[0]
-                    #     save_path = str(Path(save_path).with_suffix('.mp4'))  # force *.mp4 suffix on results videos
-                    #     vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
-                    # vid_writer[i].write(im0)
-
 
         # Print time (inference-only)
         if len(det): #only if detection print output
@@ -296,6 +288,7 @@ def parse_opt():
     parser.add_argument('--dnn', action='store_true', help='use OpenCV DNN for ONNX inference')
     parser.add_argument('--vid-stride', type=int, default=1, help='video frame-rate stride')
     parser.add_argument('--mse-max', type=float, default=50, help='image difference to capture frame')
+    parser.add_argument('--verbose', action='store_true', help='debug output')
     opt = parser.parse_args()
     opt.imgsz *= 2 if len(opt.imgsz) == 1 else 1  # expand
     print_args(vars(opt))
