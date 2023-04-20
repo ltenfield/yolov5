@@ -18,7 +18,7 @@ from pathlib import Path
 from threading import Thread
 from threading import Event
 from urllib.parse import urlparse
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import numpy as np
 import psutil
@@ -387,6 +387,7 @@ class LoadStreams:
             LOGGER.warning('WARNING ⚠️ Stream shapes differ. For optimal performance supply similarly-shaped streams.')
 
     def update(self, i, cap, stream):
+        lastcap: datetime = datetime.now()
         while True:
             if not cap.isOpened():
                 cap = cv2.VideoCapture(stream)
@@ -395,6 +396,7 @@ class LoadStreams:
             first = True
             mse = 0
             now = datetime.now()
+            lastcap = now
             dt_string = now.strftime("%d/%m/%Y %H:%M:%S") 
             LOGGER.info(f'[{dt_string}] update start n:{n} frame:{f} mse_max:{self.mse_max}')
             while cap.isOpened() and n < f:
@@ -404,8 +406,11 @@ class LoadStreams:
                     success, im = cap.retrieve()
                     if success:
                         mse = self.mse(self.imgs[i],im)
-                        if first or mse > self.mse_max: # if image differences large enough
+                        now = datetime.now()
+                        # and (now - lastcap) > timedelta(seconds = 60): # if image differences large enough and more then 60 seconds
+                        if first or (now - lastcap) > timedelta(seconds = 60) or mse > self.mse_max:
                             self.imgs[i] = im # send to detect
+                            lastcap = datetime.now()
                             # LOGGER.info(f'n:{n} frame:{f}')
                             self.event.set() #notify consumer
                             first = False
