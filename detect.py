@@ -33,7 +33,7 @@ import sys
 from pathlib import Path
 from datetime import datetime, timedelta
 import subprocess
-#import logging
+import logging
 #from playsound import playsound
 
 import torch
