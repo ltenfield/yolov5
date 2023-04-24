@@ -34,6 +34,10 @@ from pathlib import Path
 from datetime import datetime, timedelta
 import subprocess
 import logging
+from queue import Queue
+import smtplib, ssl
+from email.message import EmailMessage
+from threading import Thread
 #from playsound import playsound
 
 import torch
@@ -82,7 +86,9 @@ def run(
         dnn=False,  # use OpenCV DNN for ONNX inference
         vid_stride=1,  # video frame-rate stride
         mse_max=50, # mse image difference
-        verbose=False # debug output
+        verbose=False, # debug output
+        det_email='', # emails for det notifications
+        det_email_interval=300
 ):
     if verbose:
         LOGGER.setLevel(logging.DEBUG)
@@ -119,6 +125,16 @@ def run(
         dataset = LoadImages(source, img_size=imgsz, stride=stride, auto=pt, vid_stride=vid_stride)
     vid_path, vid_writer = [None] * bs, [None] * bs
 
+    # Setup notification mail queue
+    smtp_user = os.environ.get('SMTP_USER')
+    smtp_password = os.environ.get('SMTP_PASSWORD')
+    if not(smtp_user and smtp_password):
+        LOGGER.warning('SMTP_USER and SMTP_PASSWORD must be set to start email service')
+    else:
+        smtp_msg_queue = Queue(maxsize=100)
+        smtp_thread = Thread(target=send_det_email,args=[smtp_msg_queue,smtp_user,smtp_password])
+        smtp_thread.start()
+    lastemail: datetime = datetime.now() - timedelta(seconds=det_email_interval)
     # Run inference
     lastdettime: datetime = datetime.now()
     vsaveproc: subprocess.Popen[bytes] = None
@@ -246,7 +262,25 @@ def run(
         if len(det): #only if detection print output
             now = datetime.now()
             dt_string = now.strftime("%d/%m/%Y %H:%M:%S")   
-            LOGGER.info(f"[{dt_string}] {s}{'' if len(det) else '(no detections), '}{dt[1].dt * 1E3:.1f}ms")
+            log_string = f"[{dt_string}] {s}{'' if len(det) else '(no detections), '}{dt[1].dt * 1E3:.1f}ms"
+            LOGGER.info(log_string)
+            if det_email and smtp_user and smtp_password:
+                now = datetime.now()
+                sincelastemail = now - lastemail
+                LOGGER.debug(f'time since last email:[{sincelastemail}]')
+                if sincelastemail > timedelta(seconds = det_email_interval):
+                    msg = EmailMessage()
+                    msg['From'] = smtp_user
+                    msg['To'] = det_email
+                    msg['Subject'] = "AI Detect event"
+                    msg.set_content(log_string)
+                    lastemail = now # reset email throttle
+                    if smtp_msg_queue.full():
+                        LOGGER.warning("Unable to send email -> queue full")
+                    else:
+                        smtp_msg_queue.put_nowait(msg)
+                        LOGGER.info('sent email')
+
 
     # Print results
     t = tuple(x.t / seen * 1E3 for x in dt)  # speeds per image
@@ -257,6 +291,30 @@ def run(
     if update:
         strip_optimizer(weights[0])  # update model (to fix SourceChangeWarning)
 
+# def test_conn_open(conn):
+#     try:
+#         status = conn.noop()[0]
+#     except:  # smtplib.SMTPServerDisconnected
+#         status = -1
+#     return True if status == 250 else False
+
+def send_det_email(det_queue: Queue, smtp_user: str, smtp_password: str):
+    context = ssl.create_default_context()
+    smtp = smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context)
+    #smtp.set_debuglevel(2)
+    while True:
+        aMsg: EmailMessage = det_queue.get(block=True,timeout=None)
+        LOGGER.debug(f'got mail queue messge:[{aMsg}]')
+        if isinstance(aMsg,EmailMessage):
+            reply = smtp.connect("smtp.gmail.com",465)
+            LOGGER.debug(f'email connection reply:[{reply}]')
+            reply = smtp.login(smtp_user,smtp_password)
+            LOGGER.debug(f'email login reply:[{reply}]')
+            reply = smtp.send_message(aMsg)
+            LOGGER.debug(f'email send_message reply:[{reply}]')
+            reply = smtp.quit()
+            LOGGER.debug(f'email quit reply:[{reply}]')
+        
 
 def parse_opt():
     parser = argparse.ArgumentParser()
@@ -289,6 +347,8 @@ def parse_opt():
     parser.add_argument('--vid-stride', type=int, default=1, help='video frame-rate stride')
     parser.add_argument('--mse-max', type=float, default=50, help='image difference to capture frame')
     parser.add_argument('--verbose', action='store_true', help='debug output')
+    parser.add_argument('--det-email', type=str, help='email addres to send notifications')
+    parser.add_argument('--det-email-interval', type=int, default=300, help='minimum time before another email is sent')
     opt = parser.parse_args()
     opt.imgsz *= 2 if len(opt.imgsz) == 1 else 1  # expand
     print_args(vars(opt))
