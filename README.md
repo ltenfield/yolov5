@@ -183,6 +183,11 @@ python detect.py --source 0  # webcam
                           'rtsp://example.com/media.mp4'  # RTSP, RTMP, HTTP stream
 ```
 
+# with email detection notification
+```bash
+SMTP_USER="john.doe@gmail.com" SMTP_PASSWORD="pass" python detect.py --source rtsp://ruser:rpassword@192.168.2.170:554/Streaming/Channels/502 --mse-max 150 --conf-thres 0.8 --verbose --det-email=8195551212@msg.koodomobile.com
+```
+
 </details>
 
 <details>
