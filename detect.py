@@ -88,12 +88,14 @@ def run(
         mse_max=50, # mse image difference
         verbose=False, # debug output
         det_email='', # emails for det notifications
-        det_email_interval=300
+        det_email_interval=300,
+        det_types=['person','car','truck']
 ):
     if verbose:
         LOGGER.setLevel(logging.DEBUG)
     else:
         LOGGER.setLevel(logging.INFO)
+    det_types = set(det_types)
     source = str(source)
     save_img = not nosave and not source.endswith('.txt')  # save inference images
     is_file = Path(source).suffix[1:] in (IMG_FORMATS + VID_FORMATS)
@@ -160,6 +162,7 @@ def run(
         # Second-stage classifier (optional)
         # pred = utils.general.apply_classifier(pred, classifier_model, im, im0s)
 
+        det_names = set()
         # Process predictions
         for i, det in enumerate(pred):  # per image
             seen += 1
@@ -184,6 +187,8 @@ def run(
                 for c in det[:, 5].unique():
                     n = (det[:, 5] == c).sum()  # detections per class
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
+                    #det_names.append(names[int(c)])
+                    det_names.add(names[int(c)])
                     #LOGGER.info(f'detection:{n} {names[int(c)]}')
                     #if names[int(c)] == 'person':
                         #playsound('/System/Library/Sounds/Funk.aiff')
@@ -215,7 +220,7 @@ def run(
 
             # Save results (image with detections)
             # vsaveproc = None
-            if save_img and len(det): #save only if detection
+            if save_img and len(det) and det_names & det_types: #save only if detection
                 if dataset.mode == 'image':
                     cv2.imwrite(save_path, im0)
                 else:  # 'video' or 'stream'
@@ -264,7 +269,7 @@ def run(
             dt_string = now.strftime("%d/%m/%Y %H:%M:%S")   
             log_string = f"[{dt_string}] {s}{'' if len(det) else '(no detections), '}{dt[1].dt * 1E3:.1f}ms"
             LOGGER.info(log_string)
-            if det_email and smtp_user and smtp_password:
+            if det_email and smtp_user and smtp_password and det_names & det_types:
                 now = datetime.now()
                 sincelastemail = now - lastemail
                 LOGGER.debug(f'time since last email:[{sincelastemail}]')
@@ -347,8 +352,9 @@ def parse_opt():
     parser.add_argument('--vid-stride', type=int, default=1, help='video frame-rate stride')
     parser.add_argument('--mse-max', type=float, default=50, help='image difference to capture frame')
     parser.add_argument('--verbose', action='store_true', help='debug output')
-    parser.add_argument('--det-email', type=str, help='email addres to send notifications')
+    parser.add_argument('--det-email', type=str, help='email address to send notifications')
     parser.add_argument('--det-email-interval', type=int, default=300, help='minimum time before another email is sent')
+    parser.add_argument('--det-types', nargs='+', type=str, default=['person','car','truck'], help='what types of detections cause notifications')
     opt = parser.parse_args()
     opt.imgsz *= 2 if len(opt.imgsz) == 1 else 1  # expand
     print_args(vars(opt))
