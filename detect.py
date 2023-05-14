@@ -172,6 +172,7 @@ def run(
             else:
                 p, im0, frame = path, im0s.copy(), getattr(dataset, 'frame', 0)
 
+            #source_name = p # alternate email subject with full stream path
             p = Path(p)  # to Path
             save_path = str(save_dir / p.name)  # im.jpg
             txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # im.txt
@@ -277,7 +278,7 @@ def run(
                     msg = EmailMessage()
                     msg['From'] = smtp_user
                     msg['To'] = det_email
-                    msg['Subject'] = "AI Detect event"
+                    msg['Subject'] = 'AI Detect event:[{0}:{1}]'.format(p.stem,det_names)
                     msg.set_content(log_string)
                     lastemail = now # reset email throttle
                     if smtp_msg_queue.full():
